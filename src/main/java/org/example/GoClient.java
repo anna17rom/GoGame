@@ -1,54 +1,67 @@
 package org.example;
-
 import java.awt.*;
-import java.net.*;
 import java.io.*;
+import java.net.*;
 import javax.swing.*;
-import javax.swing.border.LineBorder;
 
-public class GoClient extends JFrame implements Runnable {
+public class GoClient extends JFrame {
 
-    Socket socket;
-    private DataInputStream fromServer;
+
+    private Socket socket;
     private DataOutputStream toServer;
+    private MainMenu mainMenu;
 
-    public static void main(String[] args) {
-        GoClient client = new GoClient();
-        client.setBounds(100, 100, 400, 400);
-        client.init();
-        client.setVisible(true);
+    public GoClient() {
+        setTitle("Go Client");
+        setSize(300, 300);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        setupMainMenu();
+        connectToServer();
     }
 
-    public void init() {
-        JPanel p = new JPanel();
-        p.setLayout(new GridLayout(3, 3, 0, 0));
-        p.setBorder(new LineBorder(Color.black, 1));
-        add(p, BorderLayout.CENTER);
+    private void setupMainMenu() {
+        MainMenu.MenuListener menuListener = new MainMenu.MenuListener() {
+            @Override
+            public void onTwoPlayersSelected() {
+                sendGameChoice("TWO_PLAYERS");
+            }
 
-        connectToServer();
+            @Override
+            public void onBotGameSelected() {
+                sendGameChoice("BOT_GAME");
+            }
+
+            @Override
+            public void onExitSelected() {
+                System.exit(0);
+            }
+        };
+
+        mainMenu = new MainMenu(menuListener);
+        setJMenuBar(mainMenu);
+    }
+
+    private void sendGameChoice(String choice) {
+        try {
+            toServer.writeBytes(choice + "\n");
+            System.out.println("Wysłano wybór gry: " + choice);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void connectToServer() {
         try {
             socket = new Socket("localhost", 8000);
-            fromServer = new DataInputStream(socket.getInputStream());
             toServer = new DataOutputStream(socket.getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        catch (IOException ex) {
-            System.err.println(ex);
-        }
-
-        Thread thread = new Thread(this);
-        thread.start();
     }
 
-    @Override
-    public void run() {
-        try {
-            int player = fromServer.readInt();
-            // TODO: Add your custom logic here for communication with the server
-        } catch (IOException ex) {
-            System.err.println(ex);
-        }
+    public static void main(String[] args) {
+        new GoClient().setVisible(true);
     }
 }
+
