@@ -75,7 +75,7 @@ public class BoardPanel extends JPanel {
 
     private void drawStones(Graphics g) {
         for (Stone stone : goBoard.getStones()) {
-            g.setColor(Color.BLACK);
+            g.setColor(stone.color == GoBoard.StoneColor.BLACK ? Color.BLACK : Color.WHITE);
             g.fillOval(stone.x - 10, stone.y - 10, 20, 20);
         }
     }

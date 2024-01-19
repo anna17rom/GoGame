@@ -30,7 +30,6 @@ public class RemotePlayer extends Player {
 
     @Override
     public GoBoard.Stone nextMove(GoBoard board) {
-        sendBoard(board);
         ClientRequest request;
         do {
             request = waitForRequest();

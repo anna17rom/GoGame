@@ -55,22 +55,15 @@ public class GoUI extends JFrame implements Runnable {
     }
 
     public void renderBoard(GoBoard board) {
-        gameBoard = new BoardPanel(board, stoneConsumer);
-        add(gameBoard, BorderLayout.CENTER);
-        gameBoard.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                int x = getX();
-                int y = getY();
+        if (gameBoard == null) {
+            gameBoard = new BoardPanel(board, stoneConsumer);
+            add(gameBoard, BorderLayout.CENTER);
+            getContentPane().add(gameBoard);
+            gameBoard.setVisible(true);
+        }
 
-                statusLabel.setText("Waiting for the other player to move");
-                waiting = false;
-                stoneConsumer.accept(new GoBoard.Stone(x, y, null));
-            }
-        });
+
         gameBoard.setGoBoard(board);
-        gameBoard.setVisible(true);
-        getContentPane().add(gameBoard);
         gameBoard.render();
     }
 

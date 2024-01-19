@@ -40,7 +40,8 @@ public class ClientSession {
     public void start() {
 
         ui = new GoUI(null, stone -> stonesSource.add(stone));
-        ui.run();
+        Thread uiThread = new Thread(ui);
+        uiThread.start();
         Command.Type type = ui.readGameMode();
         ServerResponse response;
         do {
