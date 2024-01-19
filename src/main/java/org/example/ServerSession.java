@@ -21,7 +21,6 @@ public class ServerSession {
         System.out.println("Started new game session");
         do {
             Stone stone = p1.nextMove(board);
-
             System.out.println("P1 move #" + p1.getMoveCount() + ": " + stone.toString());
             board.addStone(stone);
             stone = p2.nextMove(board);

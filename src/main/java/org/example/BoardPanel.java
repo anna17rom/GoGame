@@ -12,7 +12,6 @@ public class BoardPanel extends JPanel {
 
     private GoBoard goBoard;
     private final Consumer<Stone> stoneConsumer;
-    JPanel panel;
 
     public BoardPanel(GoBoard goBoard, Consumer<Stone> stoneConsumer) {
         this.goBoard = goBoard;
@@ -25,23 +24,14 @@ public class BoardPanel extends JPanel {
     }
 
     public void render() {
-        panel.repaint();
+        repaint();
     }
 
     private void initializeUI() {
         setSize(goBoard.getGridSize() * goBoard.getNumberOfSquares() + 100, goBoard.getGridSize() * goBoard.getNumberOfSquares() + 100);
 
-        panel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                drawBoard(g);
-                drawGrid(g);
-                drawStones(g);
-            }
-        };
 
-        panel.addMouseListener(new MouseAdapter() {
+        addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 int x = e.getX();
@@ -58,10 +48,16 @@ public class BoardPanel extends JPanel {
             }
         });
 
-        add(panel);
-        setVisible(true);
     }
 
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            drawBoard(g);
+            drawGrid(g);
+            drawStones(g);
+        }
 
     private void drawBoard(Graphics g) {
         g.setColor(new Color(244, 164, 96));
