@@ -16,4 +16,6 @@ public abstract class Player {
     public int getMoveCount() {
         return moveCount;
     }
+
+    public abstract void sendBoard(GoBoard board);
 }

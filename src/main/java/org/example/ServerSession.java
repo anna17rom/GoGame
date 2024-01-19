@@ -5,8 +5,8 @@ import org.example.GoBoard.Stone;
 
 public class ServerSession {
 
-    private Player p1;
-    private Player p2;
+    private final Player p1;
+    private final Player p2;
 
     public ServerSession(Player p1, Player p2) {
         this.p1 = p1;
@@ -23,10 +23,17 @@ public class ServerSession {
             Stone stone = p1.nextMove(board);
             System.out.println("P1 move #" + p1.getMoveCount() + ": " + stone.toString());
             board.addStone(stone);
+            sendBoard(board);
             stone = p2.nextMove(board);
             System.out.println("P2 move #" + p2.getMoveCount() + ": " + stone.toString());
             board.addStone(stone);
+            sendBoard(board);
         } while (true);
+    }
+
+    private void sendBoard(GoBoard board) {
+        p1.sendBoard(board);
+        p2.sendBoard(board);
     }
 
 }

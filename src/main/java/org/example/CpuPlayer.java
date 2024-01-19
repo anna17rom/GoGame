@@ -21,4 +21,9 @@ public class CpuPlayer extends Player {
 
     }
 
+    @Override
+    public void sendBoard(GoBoard board) {
+
+    }
+
 }

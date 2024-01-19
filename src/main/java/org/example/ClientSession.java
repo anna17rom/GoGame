@@ -30,6 +30,9 @@ public class ClientSession {
     public void handleResponse(ServerResponse response) {
         System.out.println(response.toString());
         lastResponse = response;
+        if (response.getBoard()!=null){
+            renderResponse(response.getBoard());
+        }
         this.latch.countDown();
     }
 
@@ -53,11 +56,7 @@ public class ClientSession {
         } while (response.getType() != ServerResponse.Type.GAME_STARTED);
 
         ui.setBoard(response.getBoard());
-
-        Thread uiThread = new Thread(ui);
-        uiThread.start();
         ui.renderBoard(response.getBoard());
-
 
         System.out.println("Client: Game Started!");
         this.player = response.getPlayerNo();
@@ -70,7 +69,6 @@ public class ClientSession {
             stone.setColor(this.color);
             sendRequest(new ClientRequest(Command.Type.PUT_STONE, stone));
             response = waitForServerResponse();
-            renderResponse(response.getBoard());
         } while (response.getType() != ServerResponse.Type.GAME_ENDED);
 
     }

@@ -51,8 +51,8 @@ public class RemotePlayer extends Player {
             throw new RuntimeException(e);
         }
     }
-
-    private void sendBoard(GoBoard board) {
+@Override
+    public void sendBoard(GoBoard board) {
         ServerResponse response = new ServerResponse();
         response.setType(ServerResponse.Type.MOVE_REQUEST);
         response.setBoard(board);
