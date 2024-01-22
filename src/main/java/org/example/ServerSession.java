@@ -19,16 +19,39 @@ public class ServerSession {
         p1.sendGameStarted(0, board);
         p2.sendGameStarted(1, board);
         System.out.println("Started new game session");
+        Player currentPlayer = p1;
         do {
-            Stone stone = p1.nextMove(board);
-            System.out.println("P1 move #" + p1.getMoveCount() + ": " + stone.toString());
-            board.addStone(stone);
-            sendBoard(board);
-            stone = p2.nextMove(board);
-            System.out.println("P2 move #" + p2.getMoveCount() + ": " + stone.toString());
-            board.addStone(stone);
-            sendBoard(board);
+            boolean validMove = false;
+            while (!validMove){
+                Stone stone = currentPlayer.nextMove(board);
+                if (isValide(stone, board)) {
+                    validMove=true;
+                    System.out.println("P1 move #" + currentPlayer.getMoveCount() + ": " + stone.toString());
+                    board.addStone(stone);
+                } else {
+                    System.out.println("Invalid move . Try again.");
+                }
+                sendBoard(board);
+            }
+
+            currentPlayer = (currentPlayer == p1) ? p2 : p1;
+
         } while (true);
+    }
+
+    private boolean isValide(Stone stone, GoBoard board) {
+        if (isIntersectionOccupied(board, stone.getX(), stone.getY())) {
+            return false;
+        }
+        return true;
+    }
+    private boolean isIntersectionOccupied(GoBoard board, int x, int y) {
+        for (Stone existingStone : board.getStones()) {
+            if (existingStone.getX() == x && existingStone.getY() == y) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void sendBoard(GoBoard board) {
