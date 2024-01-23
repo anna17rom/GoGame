@@ -1,8 +1,11 @@
 package org.example;
 
+
 import org.example.GoBoard;
 import org.example.GoBoard.Stone;
+import org.example.StoneChain;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class ServerSession {
@@ -10,22 +13,27 @@ public class ServerSession {
     private final Player p1;
     private final Player p2;
 
+
     public ServerSession(Player p1, Player p2) {
         this.p1 = p1;
         this.p2 = p2;
     }
+
+
 
     public void start() {
         GoBoard board = new GoBoard();
 
         p1.sendGameStarted(0, board);
         p2.sendGameStarted(1, board);
+        board.setIntersections();
         System.out.println("Started new game session");
         Player currentPlayer = p1;
         do {
             boolean validMove = false;
             while (!validMove){
                 Stone stone = currentPlayer.nextMove(board);
+                /*stone.setBoard(board);*/
                 Intersection intersection = new Intersection(board,stone.getX(),stone.getY());
                 if (isValide(intersection,currentPlayer,stone)) {
                     validMove=true;
@@ -36,8 +44,6 @@ public class ServerSession {
                 }
                 sendBoard(board);
             }
-
-
 
             currentPlayer = (currentPlayer == p1) ? p2 : p1;
 
@@ -86,6 +92,14 @@ public class ServerSession {
 
         return true;
     }
+
+    private void sendBoard(GoBoard board) {
+        p1.sendBoard(board);
+        p2.sendBoard(board);
+    }
+}
+
+
     /*private boolean isValide(Stone stone, GoBoard board) {
         if (isIntersectionOccupied(board, stone.getX(), stone.getY())) {
             return false;
@@ -100,11 +114,3 @@ public class ServerSession {
         }
         return false;
     }*/
-
-    private void sendBoard(GoBoard board) {
-        p1.sendBoard(board);
-        p2.sendBoard(board);
-    }
-
-}
-

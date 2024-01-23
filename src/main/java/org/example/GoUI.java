@@ -18,13 +18,16 @@ public class GoUI extends JFrame implements Runnable {
 
     private final JLabel titleLabel = new JLabel();
     private final JLabel statusLabel = new JLabel();
+    private JComboBox<String> sizeComboBox;
 
     private boolean continueToPlay = true;
     private boolean waiting = true;
     private MainMenu mainMenu;
     private BoardPanel gameBoard;
     private BlockingQueue<Command.Type> menuQ = new LinkedBlockingQueue<>();
+    private BlockingQueue<Integer> sizeQ = new LinkedBlockingQueue<>();
 
+    private int size;
     private GoBoard board;
 
     private final Consumer<GoBoard.Stone> stoneConsumer;
@@ -72,11 +75,13 @@ public class GoUI extends JFrame implements Runnable {
             @Override
             public void onTwoPlayersSelected() {
                 menuQ.add(Command.Type.START_2P_GAME);
+                showBoardSizeSelection();
             }
 
             @Override
             public void onBotGameSelected() {
                 menuQ.add(Command.Type.START_CPU_GAME);
+                showBoardSizeSelection();
             }
 
             @Override
@@ -88,9 +93,46 @@ public class GoUI extends JFrame implements Runnable {
         mainMenu = new MainMenu(menuListener);
         setJMenuBar(mainMenu);
     }
+    private void showBoardSizeSelection() {
+        String[] sizes = {"9x9", "13x13", "19x19"};
+        sizeComboBox = new JComboBox<>(sizes);
+
+        JPanel panel = new JPanel();
+        panel.add(new JLabel("Select Board Size:"));
+        panel.add(sizeComboBox);
+
+        int result = JOptionPane.showConfirmDialog(null, panel, "Board Size Selection",
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+        if (result == JOptionPane.OK_OPTION) {
+            String selectedSize = (String) sizeComboBox.getSelectedItem();
+            handleBoardSizeSelection(selectedSize);
+        }
+    }
+    private void handleBoardSizeSelection(String selectedSize) {
+        switch (selectedSize) {
+            case "9x9":
+                sizeQ.add(8);
+                break;
+            case "13x13":
+                sizeQ.add(12);
+                break;
+            case "19x19":
+                sizeQ.add(18);
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + selectedSize);
+        }}
 
     public void setBoard(GoBoard board) {
         this.board = board;
+    }
+    public int readSize(){
+        try {
+            return sizeQ.take();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public Command.Type readGameMode() {
@@ -101,6 +143,8 @@ public class GoUI extends JFrame implements Runnable {
         }
     }
 }
+
+
 
 
 
