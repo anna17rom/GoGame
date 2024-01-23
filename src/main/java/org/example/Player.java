@@ -5,6 +5,8 @@ import org.example.ServerResponse.Mode;
 
 public abstract class Player {
 
+    protected int capturedStones;
+
     private String name;
     protected int moveCount = 0;
 
@@ -18,4 +20,10 @@ public abstract class Player {
     }
 
     public abstract void sendBoard(GoBoard board);
+    public abstract int getCapturedStones();
+
+    public abstract void addCapturedStones(int nb);
+
+
+    public abstract void removeCapturedStones(int nb);
 }

@@ -72,4 +72,15 @@ public class RemotePlayer extends Player {
         }
         return request;
     }
+    public int getCapturedStones() {
+        return capturedStones;
+    }
+
+    public void addCapturedStones(int nb) {
+        capturedStones += nb;
+    }
+
+
+    public void removeCapturedStones(int nb) { capturedStones -= nb; }
+
 }

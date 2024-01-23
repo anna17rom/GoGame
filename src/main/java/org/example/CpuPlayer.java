@@ -26,4 +26,19 @@ public class CpuPlayer extends Player {
 
     }
 
+    @Override
+    public int getCapturedStones() {
+        return 0;
+    }
+
+    @Override
+    public void addCapturedStones(int nb) {
+
+    }
+
+    @Override
+    public void removeCapturedStones(int nb) {
+
+    }
+
 }

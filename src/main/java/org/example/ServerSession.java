@@ -3,6 +3,8 @@ package org.example;
 import org.example.GoBoard;
 import org.example.GoBoard.Stone;
 
+import java.util.Set;
+
 public class ServerSession {
 
     private final Player p1;
@@ -24,7 +26,8 @@ public class ServerSession {
             boolean validMove = false;
             while (!validMove){
                 Stone stone = currentPlayer.nextMove(board);
-                if (isValide(stone, board)) {
+                Intersection intersection = new Intersection(board,stone.getX(),stone.getY());
+                if (isValide(intersection,currentPlayer,stone)) {
                     validMove=true;
                     System.out.println("P1 move #" + currentPlayer.getMoveCount() + ": " + stone.toString());
                     board.addStone(stone);
@@ -34,12 +37,56 @@ public class ServerSession {
                 sendBoard(board);
             }
 
+
+
             currentPlayer = (currentPlayer == p1) ? p2 : p1;
 
         } while (true);
     }
 
-    private boolean isValide(Stone stone, GoBoard board) {
+    private boolean isValide(Intersection intersection, Player player,Stone Mystone) {
+
+        if (!intersection.getBoard().isInGoBoard(intersection.getX(),intersection.getY())) return false;
+
+        // Preventing playing over another stone
+        if (intersection.getStoneChain() != null) return false;
+
+        Set<Intersection> capturedStones = null;
+        Set<StoneChain> capturedStoneChains = null;
+
+        Set<StoneChain> adjStoneChains = intersection.getAdjacentStoneChains();
+        StoneChain newStoneChain = new StoneChain(intersection, player);
+        intersection.setStoneChain(newStoneChain);
+        for (StoneChain stoneChain : adjStoneChains) {
+            if (stoneChain.getPlayer() == player) {
+                newStoneChain.add(stoneChain, intersection);
+            } else {
+                stoneChain.removeLiberty(intersection);
+                if (stoneChain.getLiberties().size() == 0) {
+                    stoneChain.die();
+                    for (Intersection stonesInChain: stoneChain.getStones()){
+                        intersection.getBoard().removeStone(intersection.getX(), intersection.getY());
+                    }
+                }
+            }
+        }
+
+        // Preventing suicide or ko and re-adding liberty
+        if (newStoneChain.getLiberties().size() == 0 ) {
+            for (StoneChain chain : intersection.getAdjacentStoneChains()) {
+                chain.getLiberties().add(intersection);
+            }
+            intersection.setStoneChain(null);
+            return false;
+        }
+
+        for (Intersection stone : newStoneChain.getStones()) {
+            stone.setStoneChain(newStoneChain);
+        }
+
+        return true;
+    }
+    /*private boolean isValide(Stone stone, GoBoard board) {
         if (isIntersectionOccupied(board, stone.getX(), stone.getY())) {
             return false;
         }
@@ -52,7 +99,7 @@ public class ServerSession {
             }
         }
         return false;
-    }
+    }*/
 
     private void sendBoard(GoBoard board) {
         p1.sendBoard(board);

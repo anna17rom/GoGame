@@ -9,8 +9,10 @@ import java.util.ArrayList;
 
 public class GoBoard implements Serializable {
     private final ArrayList<Stone> stones = new ArrayList<>();
-    private final int gridSize = 50;
-    private final int numberOfSquares = 8;
+    private int gridSize = 50;
+
+    private int numberOfSquares = 8;
+    private Intersection[][] intersections = new Intersection[numberOfSquares+1][numberOfSquares+1];
 
     public void addStone(int x, int y,StoneColor color) {
         stones.add(new Stone(x, y,color));
@@ -29,6 +31,38 @@ public class GoBoard implements Serializable {
 
     public int getNumberOfSquares() {
         return numberOfSquares;
+    }
+    public void setIntersections(){
+        for (int x = 0; x < numberOfSquares+1; x++) {
+            for (int y = 0; y < numberOfSquares+1; y++) {
+                intersections[x][y] = new Intersection(this, (x+1)*50, (y+1)*50);
+            }
+        }
+    }
+    public boolean isInGoBoard(int x, int y) {
+        if (x >= 50 && x <= (numberOfSquares+1)*gridSize && y >= 50 && y <= (numberOfSquares+1)*gridSize) {
+            return true;
+        }
+        return false;
+    }
+
+    public Intersection getIntersection(int x, int y) {
+        if (isInGoBoard(x, y)) {
+            return intersections[(x/50)-1][(y/50)-1];
+        } else {
+            return null;
+        }
+    }
+    public void removeStone(int x, int y) {
+        Stone stoneToRemove = new Stone();
+        for (Stone stone: stones){
+            if (stone.getX()==stoneToRemove.getX() && stone.getY()==stoneToRemove.getY()){
+                stoneToRemove = stone;
+            }
+        }
+        if (stoneToRemove != null) {
+            stones.remove(stoneToRemove);
+        }
     }
 
     public static class Stone {
