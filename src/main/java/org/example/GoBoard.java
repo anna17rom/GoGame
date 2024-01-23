@@ -6,17 +6,22 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.ArrayList;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class GoBoard implements Serializable {
     private final ArrayList<Stone> stones = new ArrayList<>();
     private int gridSize = 50;
 
     private int numberOfSquares = 8;
-    private Intersection[][] intersections = new Intersection[numberOfSquares+1][numberOfSquares+1];
+    @JsonIgnore
+    private Intersection[][] intersections = new Intersection[numberOfSquares + 1][numberOfSquares + 1];
 
-    public void addStone(int x, int y,StoneColor color) {
-        stones.add(new Stone(x, y,color));
+    public void addStone(int x, int y, StoneColor color) {
+        stones.add(new Stone(x, y, color));
     }
+
     public void addStone(Stone stone) {
         stones.add(stone);
     }
@@ -32,15 +37,17 @@ public class GoBoard implements Serializable {
     public int getNumberOfSquares() {
         return numberOfSquares;
     }
-    public void setIntersections(){
-        for (int x = 0; x < numberOfSquares+1; x++) {
-            for (int y = 0; y < numberOfSquares+1; y++) {
-                intersections[x][y] = new Intersection(this, (x+1)*50, (y+1)*50);
+
+    public void setIntersections() {
+        for (int x = 0; x < numberOfSquares + 1; x++) {
+            for (int y = 0; y < numberOfSquares + 1; y++) {
+                intersections[x][y] = new Intersection(this, (x + 1) * 50, (y + 1) * 50);
             }
         }
     }
+
     public boolean isInGoBoard(int x, int y) {
-        if (x >= 50 && x <= (numberOfSquares+1)*gridSize && y >= 50 && y <= (numberOfSquares+1)*gridSize) {
+        if (x >= 50 && x <= (numberOfSquares + 1) * gridSize && y >= 50 && y <= (numberOfSquares + 1) * gridSize) {
             return true;
         }
         return false;
@@ -48,15 +55,21 @@ public class GoBoard implements Serializable {
 
     public Intersection getIntersection(int x, int y) {
         if (isInGoBoard(x, y)) {
-            return intersections[(x/50)-1][(y/50)-1];
+            return intersections[(x / 50) - 1][(y / 50) - 1];
         } else {
             return null;
         }
     }
+
+    @JsonIgnore
+    public Intersection[][] getIntersections() {
+        return intersections;
+    }
+
     public void removeStone(int x, int y) {
-        Stone stoneToRemove = new Stone();
-        for (Stone stone: stones){
-            if (stone.getX()==stoneToRemove.getX() && stone.getY()==stoneToRemove.getY()){
+        Stone stoneToRemove = null;
+        for (Stone stone : stones) {
+            if (stone.getX() == x && stone.getY() == y) {
                 stoneToRemove = stone;
             }
         }

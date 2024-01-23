@@ -1,6 +1,5 @@
 package org.example;
 
-
 import org.example.GoBoard;
 import org.example.GoBoard.Stone;
 import org.example.StoneChain;
@@ -9,21 +8,16 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class ServerSession {
-
     private final Player p1;
     private final Player p2;
-
 
     public ServerSession(Player p1, Player p2) {
         this.p1 = p1;
         this.p2 = p2;
     }
 
-
-
     public void start() {
         GoBoard board = new GoBoard();
-
         p1.sendGameStarted(0, board);
         p2.sendGameStarted(1, board);
         board.setIntersections();
@@ -31,12 +25,18 @@ public class ServerSession {
         Player currentPlayer = p1;
         do {
             boolean validMove = false;
-            while (!validMove){
+            while (!validMove) {
                 Stone stone = currentPlayer.nextMove(board);
-                /*stone.setBoard(board);*/
-                Intersection intersection = new Intersection(board,stone.getX(),stone.getY());
-                if (isValide(intersection,currentPlayer,stone)) {
-                    validMove=true;
+                Intersection intersection = null;
+                for (Intersection[] intersection1 : board.getIntersections()) {
+                    for (Intersection intersection2 : intersection1) {
+                        if (intersection2.getX() == stone.getX() && intersection2.getY() == stone.getY()) {
+                            intersection = intersection2;
+                        }
+                    }
+                }
+                if (isValide(intersection, currentPlayer, board)) {
+                    validMove = true;
                     System.out.println("P1 move #" + currentPlayer.getMoveCount() + ": " + stone.toString());
                     board.addStone(stone);
                 } else {
@@ -44,22 +44,15 @@ public class ServerSession {
                 }
                 sendBoard(board);
             }
-
             currentPlayer = (currentPlayer == p1) ? p2 : p1;
-
         } while (true);
     }
 
-    private boolean isValide(Intersection intersection, Player player,Stone Mystone) {
-
-        if (!intersection.getBoard().isInGoBoard(intersection.getX(),intersection.getY())) return false;
-
-        // Preventing playing over another stone
-        if (intersection.getStoneChain() != null) return false;
-
+    private boolean isValide(Intersection intersection, Player player, GoBoard board) {
+        if (!board.isInGoBoard(intersection.getX(), intersection.getY())) return false;
+        // Preventing playing over another stone        if (intersection.getStoneChain() != null) return false;
         Set<Intersection> capturedStones = null;
         Set<StoneChain> capturedStoneChains = null;
-
         Set<StoneChain> adjStoneChains = intersection.getAdjacentStoneChains();
         StoneChain newStoneChain = new StoneChain(intersection, player);
         intersection.setStoneChain(newStoneChain);
@@ -70,26 +63,23 @@ public class ServerSession {
                 stoneChain.removeLiberty(intersection);
                 if (stoneChain.getLiberties().size() == 0) {
                     stoneChain.die();
-                    for (Intersection stonesInChain: stoneChain.getStones()){
-                        intersection.getBoard().removeStone(intersection.getX(), intersection.getY());
+                    for (Intersection stonesInChain : stoneChain.getStones()) {
+                        board.removeStone(stonesInChain.getX(), stonesInChain.getY());
                     }
                 }
             }
         }
-
         // Preventing suicide or ko and re-adding liberty
-        if (newStoneChain.getLiberties().size() == 0 ) {
+        if (newStoneChain.getLiberties().size() == 0) {
             for (StoneChain chain : intersection.getAdjacentStoneChains()) {
                 chain.getLiberties().add(intersection);
             }
             intersection.setStoneChain(null);
             return false;
         }
-
         for (Intersection stone : newStoneChain.getStones()) {
             stone.setStoneChain(newStoneChain);
         }
-
         return true;
     }
 
