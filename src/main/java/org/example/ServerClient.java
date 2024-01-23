@@ -15,7 +15,7 @@ public class ServerClient {
                 }
             }).start();
 
-            // Create and start the first client in a separate thread
+  
             new Thread(() -> GoClientV2.main()).start();
 
         }
