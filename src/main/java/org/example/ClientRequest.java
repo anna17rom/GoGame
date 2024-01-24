@@ -6,6 +6,7 @@ import org.example.ServerResponse;
 import org.example.ServerResponse.Mode;
 
 
+
 public class ClientRequest {
     private Command.Type type;
     private Mode mode;
