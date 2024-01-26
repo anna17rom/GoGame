@@ -16,6 +16,9 @@ public class GoBoard implements Serializable {
     private int numberOfSquares = 8;
     @JsonIgnore
     private Intersection[][] intersections;
+    public Intersection getIntersectionFromArray(int x, int y) {
+        return intersections[x][y];
+    }
     public GoBoard(){}
     public GoBoard(int numberOfSquares){
         this.numberOfSquares = numberOfSquares;

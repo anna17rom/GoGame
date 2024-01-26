@@ -8,6 +8,7 @@ import org.example.ServerResponse;
 import org.example.GoServerV2.ClientIO;
 
 import java.io.IOException;
+import java.util.Set;
 
 public class RemotePlayer extends Player {
     private final static ObjectMapper MAPPER = new ObjectMapper();
@@ -87,6 +88,36 @@ public class RemotePlayer extends Player {
         capturedStones += nb;
     }
 
+    @Override
+    public int getIntersectionsInTerritories() {
+        return IntersectionsInTerritories;
+    }
+
+
+
+    @Override
+    public Set<Set<Intersection>> getTerritories() {
+        return territories;
+    }
+
+    @Override
+    public Set<Set<Intersection>> setTerritories(Set<Set<Intersection>> territories) {
+        return this.territories=territories;
+    }
+
+
+
+    @Override
+    public void addTerritory(Set<Intersection> territory) {
+        territories.add(territory);
+    }
+
+    @Override
+    public void calculateTerritory() {
+        for (Set<Intersection> territory : territories) {
+            IntersectionsInTerritories += territory.size();
+        }
+    }
 
     public void removeCapturedStones(int nb) { capturedStones -= nb; }
 

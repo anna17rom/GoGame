@@ -10,6 +10,8 @@ import java.util.Set;
 public class ServerSession {
     private final Player p1;
     private final Player p2;
+    Set<Set<Intersection>> territories = new HashSet<>();
+    Set<Intersection> visited = new HashSet<>();
 
     public ServerSession(Player p1, Player p2) {
         this.p1 = p1;
@@ -56,6 +58,13 @@ public class ServerSession {
             currentPlayer = (currentPlayer == p1) ? p2 : p1;
 
         } while (!isEndOfGame());
+        calculateTerritoriesForPlayers(board);
+        p1.calculateTerritory();
+        p2.calculateTerritory();
+        int total1 = p1.getIntersectionsInTerritories()+ p2.getCapturedStones();
+        int total2 = p2.getIntersectionsInTerritories()+ p1.getCapturedStones();
+        System.out.println("Scores for P1: Scores for captured territories: "+p1.getIntersectionsInTerritories() + " for captured stones:" + p2.getCapturedStones()+" Total: "+total1);
+        System.out.println("Scores for P2: Scores for captured territories: "+p2.getIntersectionsInTerritories() + " for captured stones:" + p1.getCapturedStones()+" Total: "+total2);
         p1.sendGameOver();
         p2.sendGameOver();
     }
@@ -100,5 +109,53 @@ public class ServerSession {
     private void sendBoard(GoBoard board) {
         p1.sendBoard(board);
         p2.sendBoard(board);
+    }
+    private void calculateTerritoriesForPlayers(GoBoard board) {
+
+
+        for (int i = 0; i <= board.getNumberOfSquares(); ++i) {
+            for (int j = 0; j <= board.getNumberOfSquares(); ++j) {
+                Intersection intersection = board.getIntersectionFromArray(i, j);
+                if (intersection.isEmpty() && intersection.getStoneChain() == null && !visited.contains(intersection)) {
+                    Set<Intersection> territory = calculateTerritory(intersection, visited, new HashSet<>());
+                    territories.add(territory);
+                    if (isTerritoryOwnedByPlayer(territory, p1)) {
+                        p1.addTerritory(territory);
+                    } else if (isTerritoryOwnedByPlayer(territory, p2)) {
+                        p2.addTerritory(territory);
+                    }
+
+                }
+            }
+
+        }
+    }
+
+    private Set<Intersection> calculateTerritory(Intersection current, Set<Intersection> visited, Set<Intersection> territory) {
+        visited.add(current);
+        territory.add(current);
+
+        for (Intersection neighbor : current.getEmptyNeighbors()) {
+            if (!visited.contains(neighbor) && !territory.contains(neighbor)) {
+                territory.addAll(calculateTerritory(neighbor, visited, territory));
+            }
+        }
+
+        return territory;
+    }
+
+    // Check if the territory is owned by the specified player
+    private boolean isTerritoryOwnedByPlayer(Set<Intersection> territory, Player player) {
+        Set<Player> owners = new HashSet<>();
+
+        for (Intersection intersection : territory) {
+            Set<StoneChain> adjStoneChains = intersection.getAdjacentStoneChains();
+            for (StoneChain stoneChain : adjStoneChains) {
+                owners.add(stoneChain.getPlayer());
+                //if(owners.size()==2){break;}
+            }
+        }
+
+        return owners.size() == 1 && owners.contains(player);
     }
 }
