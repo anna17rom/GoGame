@@ -18,6 +18,7 @@ public class ServerSession {
 
     public void start() {
         GoBoard board = new GoBoard();
+
         p1.sendGameStarted(0, board);
         p2.sendGameStarted(1, board);
         board.setIntersections();
@@ -25,32 +26,43 @@ public class ServerSession {
         Player currentPlayer = p1;
         do {
             boolean validMove = false;
-            while (!validMove) {
+            while (!validMove && !isEndOfGame()) {
                 Stone stone = currentPlayer.nextMove(board);
-                Intersection intersection = null;
-                for (Intersection[] intersection1 : board.getIntersections()) {
-                    for (Intersection intersection2 : intersection1) {
-                        if (intersection2.getX() == stone.getX() && intersection2.getY() == stone.getY()) {
-                            intersection = intersection2;
-                        }
-                    }
-                }
-                if (isValide(intersection, currentPlayer, board)) {
-                    validMove = true;
-                    System.out.println("P1 move #" + currentPlayer.getMoveCount() + ": " + stone.toString());
-                    board.addStone(stone);
+                if (currentPlayer.passed()) {
+                    sendBoard(board);
+                    currentPlayer = (currentPlayer == p1) ? p2 : p1;
                 } else {
-                    System.out.println("Invalid move . Try again.");
+                    Intersection intersection = null;
+                    for (Intersection[] intersection1 : board.getIntersections()) {
+                        for (Intersection intersection2 : intersection1) {
+                            if (intersection2.getX() == stone.getX() && intersection2.getY() == stone.getY()) {
+                                intersection = intersection2;
+                            }
+                        }
+
+                    }
+                    if (isValide(intersection, currentPlayer, stone, board)) {
+                        validMove = true;
+                        System.out.println("P1 move #" + currentPlayer.getMoveCount() + ": " + stone.toString());
+                        board.addStone(stone);
+                    } else {
+                        System.out.println("Invalid move . Try again.");
+                    }
+                    sendBoard(board);
                 }
-                sendBoard(board);
+
             }
+
             currentPlayer = (currentPlayer == p1) ? p2 : p1;
-        } while (true);
+
+        } while (!isEndOfGame());
+        p1.sendGameOver();
+        p2.sendGameOver();
     }
 
-    private boolean isValide(Intersection intersection, Player player, GoBoard board) {
+    private boolean isValide(Intersection intersection, Player player,Stone MyStone, GoBoard board) {
         if (!board.isInGoBoard(intersection.getX(), intersection.getY())) return false;
-        // Preventing playing over another stone        if (intersection.getStoneChain() != null) return false;
+        if (intersection.getStoneChain() != null) return false;
         Set<Intersection> capturedStones = null;
         Set<StoneChain> capturedStoneChains = null;
         Set<StoneChain> adjStoneChains = intersection.getAdjacentStoneChains();
@@ -82,25 +94,11 @@ public class ServerSession {
         }
         return true;
     }
-
+    private boolean isEndOfGame() {
+        return p1.passed() && p2.passed();
+    }
     private void sendBoard(GoBoard board) {
         p1.sendBoard(board);
         p2.sendBoard(board);
     }
 }
-
-
-    /*private boolean isValide(Stone stone, GoBoard board) {
-        if (isIntersectionOccupied(board, stone.getX(), stone.getY())) {
-            return false;
-        }
-        return true;
-    }
-    private boolean isIntersectionOccupied(GoBoard board, int x, int y) {
-        for (Stone existingStone : board.getStones()) {
-            if (existingStone.getX() == x && existingStone.getY() == y) {
-                return true;
-            }
-        }
-        return false;
-    }*/

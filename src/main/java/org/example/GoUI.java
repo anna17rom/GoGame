@@ -23,7 +23,7 @@ public class GoUI extends JFrame implements Runnable {
     private boolean continueToPlay = true;
     private boolean waiting = true;
     private MainMenu mainMenu;
-    private BoardPanel gameBoard;
+    public BoardPanel gameBoard;
     private BlockingQueue<Command.Type> menuQ = new LinkedBlockingQueue<>();
     private BlockingQueue<Integer> sizeQ = new LinkedBlockingQueue<>();
 

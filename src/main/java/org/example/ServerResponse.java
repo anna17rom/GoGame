@@ -9,7 +9,8 @@ public class ServerResponse {
 
     int playerNo;
     Type type;
-    GoBoard board;
+    int size;
+    GoBoard board= new GoBoard(size);
 
     Map<Integer, Integer> playerScores = new HashMap<>();
 
@@ -43,6 +44,13 @@ public class ServerResponse {
 
     public void setType(Type type) {
         this.type = type;
+    }
+    public int  getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
     }
 
     public enum Type {

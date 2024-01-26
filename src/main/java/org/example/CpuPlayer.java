@@ -41,4 +41,14 @@ public class CpuPlayer extends Player {
 
     }
 
+    @Override
+    public boolean passed() {
+        return false;
+    }
+
+    @Override
+    public void sendGameOver() {
+
+    }
+
 }

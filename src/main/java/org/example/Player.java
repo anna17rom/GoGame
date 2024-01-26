@@ -33,4 +33,8 @@ public abstract class Player {
 
 
     public abstract void removeCapturedStones(int nb);
+
+    public abstract boolean passed();
+
+    public abstract void sendGameOver();
 }

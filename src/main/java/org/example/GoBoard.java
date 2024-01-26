@@ -13,10 +13,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class GoBoard implements Serializable {
     private final ArrayList<Stone> stones = new ArrayList<>();
     private int gridSize = 50;
-
     private int numberOfSquares = 8;
     @JsonIgnore
-    private Intersection[][] intersections = new Intersection[numberOfSquares + 1][numberOfSquares + 1];
+    private Intersection[][] intersections;
+    public GoBoard(){}
+    public GoBoard(int numberOfSquares){
+        this.numberOfSquares = numberOfSquares;
+    }
 
     public void addStone(int x, int y, StoneColor color) {
         stones.add(new Stone(x, y, color));
@@ -37,8 +40,13 @@ public class GoBoard implements Serializable {
     public int getNumberOfSquares() {
         return numberOfSquares;
     }
+    public void setNumberOfSquares(int numberOfSquares){this.numberOfSquares=numberOfSquares;}
+
+
+
 
     public void setIntersections() {
+        intersections = new Intersection[numberOfSquares+1][numberOfSquares+1];
         for (int x = 0; x < numberOfSquares + 1; x++) {
             for (int y = 0; y < numberOfSquares + 1; y++) {
                 intersections[x][y] = new Intersection(this, (x + 1) * 50, (y + 1) * 50);

@@ -3,6 +3,8 @@ package org.example;
 import org.example.GoBoard.Stone;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.function.Consumer;
@@ -12,6 +14,7 @@ public class BoardPanel extends JPanel {
 
     private GoBoard goBoard;
     private final Consumer<Stone> stoneConsumer;
+    private JButton passButton;
 
     public BoardPanel(GoBoard goBoard, Consumer<Stone> stoneConsumer) {
         this.goBoard = goBoard;
@@ -28,6 +31,19 @@ public class BoardPanel extends JPanel {
     }
 
     private void initializeUI() {
+        setLayout(new BorderLayout());
+
+        passButton = new JButton("Pass");
+        passButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                stoneConsumer.accept(new Stone(0,0, GoBoard.StoneColor.BLACK)); // Pass action, send null Stone
+            }
+        });
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(passButton);
+
+        add(buttonPanel, BorderLayout.NORTH);
         setSize(goBoard.getGridSize() * goBoard.getNumberOfSquares() + 100, goBoard.getGridSize() * goBoard.getNumberOfSquares() + 100);
 
 

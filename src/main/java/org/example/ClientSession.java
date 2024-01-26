@@ -26,7 +26,6 @@ public class ClientSession {
     public ClientSession(Consumer<ClientRequest> requestConsumer) {
         this.requestConsumer = requestConsumer;
         stonesSource = new LinkedBlockingQueue<>();
-        this.latch = new CountDownLatch(1);
     }
     public void setUi(GoUI ui) {
         this.ui = ui;
@@ -42,7 +41,7 @@ public class ClientSession {
     }
 
 
-    public void start() {
+    public void start()  {
 
         ui = new GoUI(null, stone -> stonesSource.add(stone));
         Thread uiThread = new Thread(ui);
@@ -63,7 +62,6 @@ public class ClientSession {
             response = waitForServerResponse();
         } while (response.getType() != ServerResponse.Type.GAME_STARTED);
         ui.setBoard(response.getBoard());
-        GoBoard panel = response.getBoard();
         ui.renderBoard(response.getBoard());
 
 
@@ -72,12 +70,14 @@ public class ClientSession {
         this.color = this.player == 1 ? StoneColor.WHITE : StoneColor.BLACK;
         do {
             Stone stone = waitForStoneFromUI();
-            /*stone.setBoard(panel);*/
-            stone.setColor(this.color);
-            sendRequest(new ClientRequest(Command.Type.PUT_STONE, stone));
+            if (stone.getX()==0 && stone.getY()==0){
+                sendRequest(new ClientRequest(Command.Type.PASS, stone));
+            }else{
+                stone.setColor(this.color);
+                sendRequest(new ClientRequest(Command.Type.PUT_STONE, stone));}
             response = waitForServerResponse();
         } while (response.getType() != ServerResponse.Type.GAME_ENDED);
-
+        uiThread.interrupt();
     }
 
     private void renderResponse(GoBoard board) {
@@ -85,8 +85,6 @@ public class ClientSession {
     }
 
     private Stone waitForStoneFromUI() {
-        // REPLACE THIS TO FETCH FROM UI
-//        return new Stone((int)(Math.random() * 100), (int)(Math.random() * 100), this.color);
         try {
             return stonesSource.take();
         } catch (InterruptedException e) {

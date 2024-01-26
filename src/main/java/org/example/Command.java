@@ -36,7 +36,7 @@ public class Command implements Serializable {
     }
 
     public enum Type {
-        START_2P_GAME, START_CPU_GAME, END_GAME, PUT_STONE
+        START_2P_GAME, START_CPU_GAME, PUT_STONE, PASS
     }
 }
 

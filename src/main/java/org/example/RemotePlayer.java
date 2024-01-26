@@ -11,8 +11,9 @@ import java.io.IOException;
 
 public class RemotePlayer extends Player {
     private final static ObjectMapper MAPPER = new ObjectMapper();
-
+    int size;
     private final ClientIO io;
+    Boolean IfPassed=false;
 
     public RemotePlayer(ClientIO io) {
         this.io = io;
@@ -23,6 +24,7 @@ public class RemotePlayer extends Player {
         ClientRequest request;
         do {
             request = waitForRequest();
+            size=request.getSize();
         } while (request.getType() != Command.Type.START_2P_GAME
                 && request.getType() != Command.Type.START_CPU_GAME);
         return request.getMode();
@@ -33,7 +35,11 @@ public class RemotePlayer extends Player {
         ClientRequest request;
         do {
             request = waitForRequest();
-        } while (request == null || request.getType() != Command.Type.PUT_STONE);
+            this.IfPassed=false;
+            if (request.getType() == Command.Type.PASS){
+                this.IfPassed=true;
+            }
+        } while (request == null || (request.getType() != Command.Type.PUT_STONE && request.getType() != Command.Type.PASS));
         moveCount++;
         return request.getStone();
     }
@@ -42,6 +48,7 @@ public class RemotePlayer extends Player {
     public void sendGameStarted(int player, GoBoard board) {
         ServerResponse response = new ServerResponse();
         response.setPlayerNo(player);
+        board.setNumberOfSquares(size);
         response.setBoard(board);
         response.setType(ServerResponse.Type.GAME_STARTED);
         try {
@@ -82,5 +89,16 @@ public class RemotePlayer extends Player {
 
 
     public void removeCapturedStones(int nb) { capturedStones -= nb; }
+
+    @Override
+    public boolean passed() {
+        return this.IfPassed;
+    }
+
+    @Override
+    public void sendGameOver() {
+        ServerResponse response = new ServerResponse();
+        response.setType(ServerResponse.Type.GAME_ENDED);
+    }
 
 }
