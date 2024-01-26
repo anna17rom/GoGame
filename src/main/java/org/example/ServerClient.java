@@ -6,7 +6,6 @@ public class ServerClient {
 
 
         public static void main(String[] args) {
-            // Create and start the server in a separate thread
             new Thread(() -> {
                 try {
                     GoServerV2.main();
