@@ -7,10 +7,10 @@ import java.util.Set;
 
 public abstract class Player {
     protected int IntersectionsInTerritories;
-
+    Boolean IfPassed=false;
     protected int capturedStones;
     protected Set<Set<Intersection>> territories=new HashSet<>();
-
+    int size;
     private String name;
     protected int moveCount = 0;
 
@@ -55,4 +55,6 @@ public abstract class Player {
     public abstract boolean passed();
 
     public abstract void sendGameOver();
+    public abstract void EnforsedPass();
+    protected int getSize(){return this.size;}
 }

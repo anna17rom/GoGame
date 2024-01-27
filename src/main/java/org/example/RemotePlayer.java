@@ -12,9 +12,7 @@ import java.util.Set;
 
 public class RemotePlayer extends Player {
     private final static ObjectMapper MAPPER = new ObjectMapper();
-    int size;
     private final ClientIO io;
-    Boolean IfPassed=false;
 
     public RemotePlayer(ClientIO io) {
         this.io = io;
@@ -118,7 +116,10 @@ public class RemotePlayer extends Player {
             IntersectionsInTerritories += territory.size();
         }
     }
-
+    @Override
+    public void EnforsedPass() {
+        this.IfPassed=true;
+    }
     public void removeCapturedStones(int nb) { capturedStones -= nb; }
 
     @Override

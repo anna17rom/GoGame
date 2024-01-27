@@ -36,6 +36,7 @@ public class GoServerV2 {
                     p2 = new RemotePlayer(ClientIO.fromSocket(serverSocket.accept()));
                 } else {
                     p2 = new CpuPlayer();
+                    ((CpuPlayer) p2).setSize(p1.getSize());
                 }
                 p2.mode();
                 System.out.println("2nd player connected");

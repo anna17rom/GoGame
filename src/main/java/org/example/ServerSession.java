@@ -7,6 +7,8 @@ import org.example.StoneChain;
 import java.util.HashSet;
 import java.util.Set;
 
+import static java.lang.Math.pow;
+
 public class ServerSession {
     private final Player p1;
     private final Player p2;
@@ -26,9 +28,15 @@ public class ServerSession {
         board.setIntersections();
         System.out.println("Started new game session");
         Player currentPlayer = p1;
+        int invalideMoves;
         do {
+            invalideMoves = 0;
             boolean validMove = false;
             while (!validMove && !isEndOfGame()) {
+                if (invalideMoves>=pow(board.getNumberOfSquares()+1,2)){
+                    currentPlayer.EnforsedPass();
+                    System.out.println("Player has passed, and want to and the game");
+                }
                 Stone stone = currentPlayer.nextMove(board);
                 if (currentPlayer.passed()) {
                     sendBoard(board);
@@ -49,6 +57,7 @@ public class ServerSession {
                         board.addStone(stone);
                     } else {
                         System.out.println("Invalid move . Try again.");
+                        invalideMoves++;
                     }
                     sendBoard(board);
                 }
