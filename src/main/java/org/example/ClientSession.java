@@ -26,6 +26,7 @@ public class ClientSession {
     public ClientSession(Consumer<ClientRequest> requestConsumer) {
         this.requestConsumer = requestConsumer;
         stonesSource = new LinkedBlockingQueue<>();
+        this.latch = new CountDownLatch(1);
     }
     public void setUi(GoUI ui) {
         this.ui = ui;
@@ -109,36 +110,3 @@ public class ClientSession {
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

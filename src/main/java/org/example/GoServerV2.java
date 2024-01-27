@@ -61,10 +61,10 @@ public class GoServerV2 {
 
     public static class ClientIO {
 
-        final DataInputStream reader;
-        final DataOutputStream writer;
+        public final DataInputStream reader;
+        public final DataOutputStream writer;
 
-        private ClientIO(DataInputStream reader, DataOutputStream writer) {
+        public ClientIO(DataInputStream reader, DataOutputStream writer) {
             this.reader = reader;
             this.writer = writer;
         }
@@ -77,37 +77,3 @@ public class GoServerV2 {
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -12,7 +12,7 @@ import java.util.Set;
 
 public class RemotePlayer extends Player {
     private final static ObjectMapper MAPPER = new ObjectMapper();
-    int size;
+    public int size;
     private final ClientIO io;
     Boolean IfPassed=false;
 
