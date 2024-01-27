@@ -52,4 +52,15 @@ public class Move {
     public void setMoveNo(Integer moveNo) {
         this.moveNo = moveNo;
     }
+
+    @Override
+    public String toString() {
+        return "Move{" +
+                "id='" + id + '\'' +
+                ", x=" + x +
+                ", y=" + y +
+                ", color=" + color +
+                ", moveNo=" + moveNo +
+                '}';
+    }
 }

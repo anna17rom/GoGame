@@ -15,7 +15,7 @@ public class JpaUtil {
         if (factory == null) {
             Properties props = new Properties();
             props.put("hibernate.dialect", "org.hibernate.dialect.HSQLDialect");
-            props.put("hibernate.hbm2ddl.auto", "create");
+            props.put("hibernate.hbm2ddl.auto.update", "create");
             factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, props);
         }
         return factory;

@@ -40,7 +40,7 @@ public class GoServerV2 {
                 }
                 p2.mode();
                 System.out.println("2nd player connected");
-                ServerSession session = new ServerSession(p1, p2);
+                ServerSession session = new ServerSession(p1, p2,  new GoDb(JpaUtil.getEntityManager()));
                 session.start();
             } catch (Exception e) {
                 System.out.println("Session ended with error: " + e.getMessage());

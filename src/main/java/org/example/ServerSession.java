@@ -2,31 +2,40 @@ package org.example;
 
 import org.example.GoBoard;
 import org.example.GoBoard.Stone;
+import org.example.DB.*;
 import org.example.StoneChain;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import static java.lang.Math.pow;
 
 public class ServerSession {
     private final Player p1;
     private final Player p2;
+    private final GoDb db;
     Set<Set<Intersection>> territories = new HashSet<>();
     Set<Intersection> visited = new HashSet<>();
 
-    public ServerSession(Player p1, Player p2) {
+    public ServerSession(Player p1, Player p2, GoDb db) {
         this.p1 = p1;
         this.p2 = p2;
+        this.db = db;
     }
 
     public void start() {
+        String id = UUID.randomUUID().toString();
         GoBoard board = new GoBoard();
 
+        p1.setName(UUID.randomUUID().toString());
+        p2.setName(UUID.randomUUID().toString());
         p1.sendGameStarted(0, board);
         p2.sendGameStarted(1, board);
         board.setIntersections();
         System.out.println("Started new game session");
+        db.savePlayers(id, Arrays.asList(p1.getName(), p2.getName()));
         Player currentPlayer = p1;
         int invalideMoves;
         do {
@@ -55,6 +64,8 @@ public class ServerSession {
                         validMove = true;
                         System.out.println("P1 move #" + currentPlayer.getMoveCount() + ": " + stone.toString());
                         board.addStone(stone);
+                        db.saveMove(id, currentPlayer.getName(), stone, currentPlayer.getMoveCount());
+                        sendBoard(board);
                     } else {
                         System.out.println("Invalid move . Try again.");
                         invalideMoves++;

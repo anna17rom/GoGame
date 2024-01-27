@@ -3,6 +3,7 @@ package org.example.DB;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
 
 import java.util.List;
 
@@ -11,7 +12,7 @@ public class Session {
     @Id
     private String id;
 
-    @OneToMany
+    @OneToMany(cascade= CascadeType.ALL)
     private List<Player> players;
 
     public String getId() {

@@ -2,21 +2,20 @@
         xmlns="http://xmlns.jcp.org/xml/ns/persistence"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
-             http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
+        http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
         version="2.1">
-    <persistence-unit name="PERSISTENCE">
-        <description> Hibernate JPA Configuration </description>
-        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        <properties>
-            <property name="javax.persistence.jdbc.driver"
-                      value="com.mysql.cj.jdbc.Driver" />
-            <property name="javax.persistence.jdbc.url"
-                      value="jdbc:mysql://localhost:3306/gogame?useSSL=false" />
-            <property name="javax.persistence.jdbc.user" value="root" />
-            <property name="javax.persistence.jdbc.password"
-                      value="password" />
-            <property name="hibernate.show_sql" value="true" />
-            <property name="hibernate.hbm2ddl.auto" value="create-drop" />
+        <persistence-unit name="PERSISTENCE">
+            <description>Hibernate JPA Configuration</description>
+            <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+            <properties>
+                <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect" />
+                <property name="hibernate.connection.driver_class" value="com.mysql.cj.jdbc.Driver" />
+                <property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/gogame?useSSL=false&amp;useUnicode=true&amp;useJDBCCompliantTimezoneShift=true&amp;useLegacyDatetimeCode=false&amp;serverTimezone=UTC&amp;useSSL=false" />
+                <property name="hibernate.connection.username" value="root" />
+                <property name="hibernate.connection.password" value="1234" />
+                <property name="hibernate.show_sql" value="true" />
+
+                <property name="hibernate.jdbc.time_zone" value="UTC" />
         </properties>
-    </persistence-unit>
+        </persistence-unit>
 </persistence>
