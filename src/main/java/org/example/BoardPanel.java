@@ -9,35 +9,50 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.function.Consumer;
 
-
 public class BoardPanel extends JPanel {
 
-    private GoBoard goBoard;
-    private final Consumer<Stone> stoneConsumer;
-    private JButton passButton;
+    private GoBoard goBoard; // Plansza Go
+    private final Consumer<Stone> stoneConsumer; // Konsumer do przetwarzania kamieni
+    private JButton passButton; // Przycisk "Pass" dla pominięcia tury
 
+    // Konstruktor klasy BoardPanel
     public BoardPanel(GoBoard goBoard, Consumer<Stone> stoneConsumer) {
         this.goBoard = goBoard;
         this.stoneConsumer = stoneConsumer;
-        initializeUI();
+        initializeUI(); // Inicjalizacja interfejsu użytkownika
     }
 
+    // Metoda czyszcząca planszę
+    public void clearBoard() {
+        goBoard.getStones().clear();
+        repaint();
+    }
+
+    // Metoda dodająca kamień do planszy
+    public void addStoneToBoard(Stone stone) {
+        goBoard.addStone(stone.getX(), stone.getY(), stone.getColor());
+        repaint();
+    }
+
+    // Metoda ustawiająca planszę Go
     public void setGoBoard(GoBoard board) {
         this.goBoard = board;
     }
 
+    // Metoda do odświeżania widoku planszy
     public void render() {
         repaint();
     }
 
+    // Inicjalizacja interfejsu użytkownika
     private void initializeUI() {
         setLayout(new BorderLayout());
 
-        passButton = new JButton("Pass");
+        passButton = new JButton("Pass"); // Przycisk "Pass" dla pominięcia tury
         passButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                stoneConsumer.accept(new Stone(0,0, GoBoard.StoneColor.BLACK)); // Pass action, send null Stone
+                stoneConsumer.accept(new Stone(0,0, GoBoard.StoneColor.BLACK)); // Akcja Pass, wysyłanie pustego kamienia
             }
         });
         JPanel buttonPanel = new JPanel();
@@ -45,7 +60,6 @@ public class BoardPanel extends JPanel {
 
         add(buttonPanel, BorderLayout.NORTH);
         setSize(goBoard.getGridSize() * goBoard.getNumberOfSquares() + 100, goBoard.getGridSize() * goBoard.getNumberOfSquares() + 100);
-
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -66,20 +80,22 @@ public class BoardPanel extends JPanel {
 
     }
 
+    // Metoda do rysowania komponentu
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        drawBoard(g);
+        drawGrid(g);
+        drawStones(g);
+    }
 
-        @Override
-        protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            drawBoard(g);
-            drawGrid(g);
-            drawStones(g);
-        }
-
+    // Metoda do rysowania planszy
     private void drawBoard(Graphics g) {
         g.setColor(new Color(244, 164, 96));
         g.fillRect(50, 50, goBoard.getGridSize() * goBoard.getNumberOfSquares(), goBoard.getGridSize() * goBoard.getNumberOfSquares());
     }
 
+    // Metoda do rysowania siatki na planszy
     private void drawGrid(Graphics g) {
         g.setColor(new Color(139, 69, 19));
         for (int i = 50; i <= goBoard.getGridSize() * goBoard.getNumberOfSquares(); i += goBoard.getGridSize()) {
@@ -89,6 +105,7 @@ public class BoardPanel extends JPanel {
         }
     }
 
+    // Metoda do rysowania kamieni na planszy
     private void drawStones(Graphics g) {
         for (Stone stone : goBoard.getStones()) {
             g.setColor(stone.color == GoBoard.StoneColor.BLACK ? Color.BLACK : Color.WHITE);
@@ -96,6 +113,7 @@ public class BoardPanel extends JPanel {
         }
     }
 
+    // Metoda sprawdzająca, czy kliknięto w okrąg
     private boolean isCircleClicked(int centerX, int centerY, int clickX, int clickY) {
         int radius = 10;
         return Math.pow(clickX - centerX, 2) + Math.pow(clickY - centerY, 2) <= Math.pow(radius, 2);
