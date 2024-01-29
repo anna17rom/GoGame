@@ -61,30 +61,17 @@ public class GoDb {
         List<Move> moves = player.getMoves();
         return moves.stream().map(move -> move.toString()).toList();
     }
-    public List<Move> getMovesForSession(String sessionId) {
-        Session session = em.find(Session.class, sessionId);
+    public Session getSessionByID(String id){
+        Session session = em.find(Session.class, id);
+        return session;
+    }
+    public List<Move> getMovesForSession(String id) {
+        Session session = em.find(Session.class, id);
         List<Move> moves = new ArrayList<>();
         for (Player player : session.getPlayers()) {
             moves.addAll(player.getMoves());
         }
-        moves.sort(Comparator.comparingInt(Move::getMoveNo));
+        Collections.sort(moves, Comparator.comparing(Move::getMoveNo));
         return moves;
     }
-
-    public List<Move> getMovesBySession(String sessionId) {
-        Session session = em.find(Session.class, sessionId);
-        if (session == null) {
-            return Collections.emptyList();
-        }
-        return session.getPlayers().stream()
-                .flatMap(player -> player.getMoves().stream())
-                .sorted(Comparator.comparingInt(Move::getMoveNo))
-                .collect(Collectors.toList());
-    }
-
-    public List<Move> replayGame(String sessionId) {
-        List<Move> moves = getMovesForSession(sessionId);
-        return getMovesForSession(sessionId);
-    }
-
 }

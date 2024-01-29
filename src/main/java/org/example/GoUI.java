@@ -98,10 +98,7 @@ public class GoUI extends JFrame implements Runnable {
 
             @Override
             public void onRecordedGamePlaybackSelected(){
-                // Obsługa odtwarzania zapisanej gry (kod do implementacji)
-                // String sessionId = selectGameSession();
-                // List<Move> moves = goDb.replayGame(sessionId);
-                // applyMovesToBoard(moves);
+                PlayBackWindow playbackWindow = new PlayBackWindow(stoneConsumer);
             }
         };
 

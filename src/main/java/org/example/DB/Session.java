@@ -12,6 +12,8 @@ public class Session {
     @Id
     private String id;
 
+    private int size;
+
     @OneToMany(cascade= CascadeType.ALL)
     private List<Player> players;
 
@@ -30,4 +32,8 @@ public class Session {
     public void setPlayers(List<Player> players) {
         this.players = players;
     }
+
+    public int getSize(){return size;}
+
+    public void setSize(int size){this.size=size;}
 }
