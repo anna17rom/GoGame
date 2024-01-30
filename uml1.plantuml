@@ -1,0 +1,380 @@
+@startuml
+
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+class BoardPanel {
+  + BoardPanel(GoBoard, Consumer<Stone>): 
+  - goBoard: GoBoard
+  - drawStones(Graphics): void
+  # paintComponent(Graphics): void
+  - initializeUI(): void
+  + clearBoard(): void
+  - drawGrid(Graphics): void
+  - isCircleClicked(int, int, int, int): boolean
+  - drawBoard(Graphics): void
+  + addStoneToBoard(Stone): void
+  + render(): void
+   goBoard: GoBoard
+}
+class ClientIO {
+  + ClientIO(DataInputStream, DataOutputStream): 
+  + fromSocket(Socket): ClientIO
+}
+class ClientRequest {
+  + ClientRequest(Type): 
+  + ClientRequest(Type, Stone): 
+  + ClientRequest(): 
+  + ClientRequest(Type, Mode): 
+  + ClientRequest(Type, int): 
+  - size: int
+  - stone: Stone
+  - type: Type
+  - mode: Mode
+  - player: Player
+   mode: Mode
+   player: Player
+   size: int
+   type: Type
+   stone: Stone
+}
+class ClientSession {
+  + ClientSession(Consumer<ClientRequest>): 
+  - ui: GoUI
+  - waitForStoneFromUI(): Stone
+  ~ sendRequest(ClientRequest): void
+  - waitForServerResponse(): ServerResponse
+  + handleResponse(ServerResponse): void
+  + start(): void
+  - renderResponse(GoBoard): void
+   ui: GoUI
+}
+class Command {
+  + Command(): 
+  + Command(Type, Stone): 
+  ~ stone: Stone
+  ~ type: Type
+   stone: Stone
+   type: Type
+}
+class CpuPlayer {
+  + CpuPlayer(): 
+  + mode(): Mode
+  + passed(): boolean
+  + sendGameOver(): void
+  + calculateTerritory(): void
+  + removeCapturedStones(int): void
+  + setTerritories(Set<Set<Intersection>>): Set<Set<Intersection>>
+  + sendGameStarted(int, GoBoard): void
+  + nextMove(GoBoard): Stone
+  + addTerritory(Set<Intersection>): void
+  + EnforsedPass(): void
+  + sendBoard(GoBoard): void
+  + addCapturedStones(int): void
+   territories: Set<Set<Intersection>>
+   size: int
+   intersectionsInTerritories: int
+   capturedStones: int
+}
+class GoBoard {
+  + GoBoard(): 
+  + GoBoard(int): 
+  - stones: ArrayList<Stone>
+  - gridSize: int
+  - numberOfSquares: int
+  - intersections: Intersection[][]
+  + getIntersectionFromArray(int, int): Intersection
+  + addStone(Stone): void
+  + isInGoBoard(int, int): boolean
+  + addStone(int, int, StoneColor): void
+  + removeStone(int, int): void
+  + setIntersections(): void
+  + getIntersection(int, int): Intersection
+   numberOfSquares: int
+   gridSize: int
+   intersections: Intersection[][]
+   stones: ArrayList<Stone>
+}
+class GoClientV2 {
+  + GoClientV2(): 
+  + main(String[]): void
+}
+class GoDb {
+  + GoDb(EntityManager): 
+  + savePlayers(String, int, List<String>): void
+  + getPlayersMoves(String): List<String>
+  + getMovesForSession(String): List<Move>
+  + getSessionByID(String): Session
+  + saveMove(String, String, Stone, int): void
+}
+class GoServerV2 {
+  + GoServerV2(): 
+  + main(String[]): void
+  - listenForPlayerRequest(ClientIO, Consumer<ClientRequest>): void
+}
+class GoUI {
+  + GoUI(GoBoard, Consumer<Stone>): 
+  - board: GoBoard
+  - showBoardSizeSelection(): void
+  + readSize(): int
+  + renderBoard(GoBoard): void
+  + run(): void
+  - setupMainMenu(): void
+  - handleBoardSizeSelection(String): void
+  + readGameMode(): Type
+   board: GoBoard
+}
+class Intersection {
+  + Intersection(GoBoard, int, int): 
+  - x: int
+  - stoneChain: StoneChain
+  - y: int
+   empty: boolean
+   emptyNeighbors: Set<Intersection>
+   board: GoBoard
+   neighborsStoneChains: Set<StoneChain>
+   y: int
+   x: int
+   stoneChain: StoneChain
+}
+class JpaUtil {
+  + JpaUtil(): 
+   entityManager: EntityManager
+   entityManagerFactory: EntityManagerFactory
+}
+class MainMenu {
+  + MainMenu(MenuListener): 
+}
+interface MenuListener << interface >> {
+  + onRecordedGamePlaybackSelected(): void
+  + onTwoPlayersSelected(): void
+  + onBotGameSelected(): void
+  + onExitSelected(): void
+}
+enum Mode << enumeration >> {
+  + Mode(): 
+  + values(): Mode[]
+  + valueOf(String): Mode
+}
+class Move {
+  + Move(): 
+  - id: String
+  - moveNo: Integer
+  - x: Integer
+  - y: Integer
+  - color: Integer
+  + toString(): String
+   x: Integer
+   moveNo: Integer
+   y: Integer
+   id: String
+   color: Integer
+}
+class PlayBackWindow {
+  + PlayBackWindow(Consumer<Stone>): 
+  + readSessionID(): String
+  - initializeComponents(): void
+  - setupLayout(): void
+  + PlayBackGameOpen(Consumer<Stone>): void
+}
+class Player {
+  + Player(): 
+  ~ size: int
+  # moveCount: int
+  # IntersectionsInTerritories: int
+  - name: String
+  # territories: Set<Set<Intersection>>
+  # capturedStones: int
+  + nextMove(GoBoard): Stone
+  + sendGameStarted(int, GoBoard): void
+  + sendGameOver(): void
+  + mode(): Mode
+  + passed(): boolean
+  + setTerritories(Set<Set<Intersection>>): Set<Set<Intersection>>
+  + calculateTerritory(): void
+  + EnforsedPass(): void
+  + sendBoard(GoBoard): void
+  + addCapturedStones(int): void
+  + addTerritory(Set<Intersection>): void
+  + removeCapturedStones(int): void
+   name: String
+   IntersectionsInTerritories: int
+   territories: Set<Set<Intersection>>
+   size: int
+   capturedStones: int
+   moveCount: int
+}
+class Player {
+  + Player(): 
+  - id: String
+  - moves: List<Move>
+   id: String
+   moves: List<Move>
+}
+class RemotePlayer {
+  + RemotePlayer(ClientIO): 
+  + passed(): boolean
+  + addCapturedStones(int): void
+  + setTerritories(Set<Set<Intersection>>): Set<Set<Intersection>>
+  + calculateTerritory(): void
+  - waitForRequest(): ClientRequest
+  + EnforsedPass(): void
+  + addTerritory(Set<Intersection>): void
+  + removeCapturedStones(int): void
+  + sendGameStarted(int, GoBoard): void
+  + sendGameOver(): void
+  + mode(): Mode
+  + nextMove(GoBoard): Stone
+  + sendBoard(GoBoard): void
+   capturedStones: int
+   territories: Set<Set<Intersection>>
+   intersectionsInTerritories: int
+}
+class ServerClient {
+  + ServerClient(): 
+  + main(String[]): void
+}
+class ServerResponse {
+  + ServerResponse(): 
+  ~ playerNo: int
+  ~ playerScores: Map<Integer, Integer>
+  ~ size: int
+  ~ board: GoBoard
+  ~ type: Type
+  + toString(): String
+   playerNo: int
+   playerScores: Map<Integer, Integer>
+   size: int
+   type: Type
+   board: GoBoard
+}
+class ServerSession {
+  + ServerSession(Player, Player, GoDb): 
+  - isValid(Intersection, Player, GoBoard): boolean
+  + start(): void
+  - isOccupied(Intersection): boolean
+  - sendBoard(GoBoard): void
+  - calculateTerritoriesForPlayers(GoBoard): void
+  - calculateTerritory(Intersection, Set<Intersection>, Set<Intersection>): Set<Intersection>
+  - removeLibertyAndCaptureIfNecessary(StoneChain, Intersection, GoBoard): void
+  - isValidPosition(Intersection, GoBoard): boolean
+  - captureChain(StoneChain, GoBoard): void
+  - isTerritoryOwnedByPlayer(Set<Intersection>, Player): boolean
+   endOfGame: boolean
+}
+class Session {
+  + Session(): 
+  - id: String
+  - players: List<Player>
+   id: String
+   sessionSize: int
+   players: List<Player>
+}
+class Stone {
+  + Stone(): 
+  + Stone(int, int, StoneColor): 
+  ~ y: int
+  ~ color: StoneColor
+  ~ x: int
+  + toString(): String
+   y: int
+   color: StoneColor
+   x: int
+}
+class StoneChain {
+  + StoneChain(StoneChain): 
+  + StoneChain(Set<Intersection>, Set<Intersection>, Player): 
+  + StoneChain(Intersection, Player): 
+  - stones: Set<Intersection>
+  - player: Player
+  - liberties: Set<Intersection>
+  + addToStoneChain(StoneChain, Intersection): void
+  + removeLiberty(Intersection): StoneChain
+  + dieAndUpdateScore(): void
+   player: Player
+   liberties: Set<Intersection>
+   stones: Set<Intersection>
+}
+enum StoneColor << enumeration >> {
+  + StoneColor(): 
+  + values(): StoneColor[]
+  + valueOf(String): StoneColor
+}
+enum Type << enumeration >> {
+  + Type(): 
+  + values(): Type[]
+  + valueOf(String): Type
+}
+enum Type << enumeration >> {
+  + Type(): 
+  + valueOf(String): Type
+  + values(): Type[]
+}
+
+BoardPanel     "1" *-[#595959,plain]-> "goBoard\n1" GoBoard        
+BoardPanel      -[#595959,dashed]->  Stone          : "«create»"
+ClientIO        +-[#820000,plain]-  GoServerV2     
+ClientRequest  "1" *-[#595959,plain]-> "mode\n1" Mode           
+ClientRequest  "1" *-[#595959,plain]-> "player\n1" Player         
+ClientRequest  "1" *-[#595959,plain]-> "stone\n1" Stone          
+ClientRequest  "1" *-[#595959,plain]-> "type\n1" Type           
+ClientSession   -[#595959,dashed]->  ClientRequest  : "«create»"
+ClientSession  "1" *-[#595959,plain]-> "ui\n1" GoUI           
+ClientSession   -[#595959,dashed]->  GoUI           : "«create»"
+ClientSession  "1" *-[#595959,plain]-> "lastResponse\n1" ServerResponse 
+ClientSession  "1" *-[#595959,plain]-> "stonesSource\n*" Stone          
+ClientSession  "1" *-[#595959,plain]-> "color\n1" StoneColor     
+Command        "1" *-[#595959,plain]-> "stone\n1" Stone          
+Command        "1" *-[#595959,plain]-> "type\n1" Type           
+CpuPlayer       -[#000082,plain]-^  Player         
+CpuPlayer       -[#595959,dashed]->  ServerResponse : "«create»"
+CpuPlayer       -[#595959,dashed]->  Stone          : "«create»"
+GoBoard         -[#595959,dashed]->  Intersection   : "«create»"
+GoBoard        "1" *-[#595959,plain]-> "intersections\n*" Intersection   
+GoBoard        "1" *-[#595959,plain]-> "stones\n*" Stone          
+GoBoard         -[#595959,dashed]->  Stone          : "«create»"
+GoClientV2      -[#595959,dashed]->  ClientSession  : "«create»"
+GoDb            -[#595959,dashed]->  Move           : "«create»"
+GoDb            -[#595959,dashed]->  Player         : "«create»"
+GoDb            -[#595959,dashed]->  Session        : "«create»"
+GoServerV2      -[#595959,dashed]->  CpuPlayer      : "«create»"
+GoServerV2      -[#595959,dashed]->  GoDb           : "«create»"
+GoServerV2      -[#595959,dashed]->  RemotePlayer   : "«create»"
+GoServerV2      -[#595959,dashed]->  ServerSession  : "«create»"
+GoUI            -[#595959,dashed]->  BoardPanel     : "«create»"
+GoUI           "1" *-[#595959,plain]-> "gameBoard\n1" BoardPanel     
+GoUI           "1" *-[#595959,plain]-> "board\n1" GoBoard        
+GoUI            -[#595959,dashed]->  MainMenu       : "«create»"
+GoUI           "1" *-[#595959,plain]-> "mainMenu\n1" MainMenu       
+GoUI            -[#595959,dashed]->  PlayBackWindow : "«create»"
+GoUI           "1" *-[#595959,plain]-> "menuQ\n*" Type           
+Intersection   "1" *-[#595959,plain]-> "goBoard\n1" GoBoard        
+Intersection   "1" *-[#595959,plain]-> "stoneChain\n1" StoneChain     
+MenuListener    +-[#820000,plain]-  MainMenu       
+Mode            +-[#820000,plain]-  ServerResponse 
+PlayBackWindow  -[#595959,dashed]->  BoardPanel     : "«create»"
+PlayBackWindow  -[#595959,dashed]->  GoBoard        : "«create»"
+PlayBackWindow  -[#595959,dashed]->  GoDb           : "«create»"
+PlayBackWindow  -[#595959,dashed]->  Stone          : "«create»"
+Player         "1" *-[#595959,plain]-> "moves\n*" Move           
+RemotePlayer   "1" *-[#595959,plain]-> "io\n1" ClientIO       
+RemotePlayer    -[#000082,plain]-^  Player         
+RemotePlayer    -[#595959,dashed]->  ServerResponse : "«create»"
+ServerResponse "1" *-[#595959,plain]-> "board\n1" GoBoard        
+ServerResponse  -[#595959,dashed]->  GoBoard        : "«create»"
+ServerResponse "1" *-[#595959,plain]-> "type\n1" Type           
+ServerSession   -[#595959,dashed]->  GoBoard        : "«create»"
+ServerSession  "1" *-[#595959,plain]-> "db\n1" GoDb           
+ServerSession  "1" *-[#595959,plain]-> "visited\n*" Intersection   
+ServerSession  "1" *-[#595959,plain]-> "p1\n1" Player         
+ServerSession   -[#595959,dashed]->  StoneChain     : "«create»"
+Session        "1" *-[#595959,plain]-> "players\n*" Player         
+Stone           +-[#820000,plain]-  GoBoard        
+Stone          "1" *-[#595959,plain]-> "color\n1" StoneColor     
+StoneChain     "1" *-[#595959,plain]-> "stones\n*" Intersection   
+StoneChain     "1" *-[#595959,plain]-> "player\n1" Player         
+StoneColor      +-[#820000,plain]-  GoBoard        
+Type            +-[#820000,plain]-  Command        
+Type            +-[#820000,plain]-  ServerResponse 
+@enduml
