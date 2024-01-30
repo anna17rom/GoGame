@@ -16,11 +16,12 @@ public class GoDb {
         this.em = em;
     }
 
-    public void savePlayers(String sessionId, List<String> players) {
+    public void savePlayers(String sessionId,int size, List<String> players) {
         EntityTransaction transaction = em.getTransaction();
         transaction.begin();
         Session session = new Session();
         session.setId(sessionId);
+        session.setSessionSize(size);
         session.setPlayers(players.stream().map(s -> {
 
             Player player = new Player();

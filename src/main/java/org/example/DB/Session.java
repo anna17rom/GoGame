@@ -33,7 +33,7 @@ public class Session {
         this.players = players;
     }
 
-    public int getSize(){return size;}
+    public int getSessionSize(){return size;}
 
-    public void setSize(int size){this.size=size;}
+    public void setSessionSize(int size){this.size=size;}
 }
