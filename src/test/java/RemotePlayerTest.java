@@ -26,7 +26,7 @@ public class RemotePlayerTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         // Assume ClientIO has public fields 'reader' and 'writer' for this example
-        mockIO.reader = mockInputStream;
+        //mockIO.reader = mockInputStream;
         player = new RemotePlayer(mockIO);
     }
 

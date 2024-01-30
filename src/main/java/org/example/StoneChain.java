@@ -54,7 +54,7 @@ public class StoneChain {
     }
 
     // Metoda dodająca kamienie i wolności z innego łańcucha kamieni do bieżącego łańcucha.
-    public void add(StoneChain stoneChain, Intersection playedStone) {
+    public void addToStoneChain(StoneChain stoneChain, Intersection playedStone) {
         this.stones.addAll(stoneChain.stones);
         this.liberties.addAll(stoneChain.liberties);
         // Usunięcie zagranej kamieni z wolności
@@ -69,10 +69,10 @@ public class StoneChain {
     }
 
     // Metoda usuwająca łańcuch kamieni z planszy.
-    public void die() {
+    public void dieAndUpdateScore() {
         for (Intersection rollingStone : this.stones) {
             rollingStone.setStoneChain(null);
-            Set<StoneChain> adjacentStoneChains = rollingStone.getAdjacentStoneChains();
+            Set<StoneChain> adjacentStoneChains = rollingStone.getNeighborsStoneChains();
             for (StoneChain stoneChain : adjacentStoneChains) {
                 stoneChain.liberties.add(rollingStone);
             }

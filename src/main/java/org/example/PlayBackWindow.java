@@ -76,7 +76,7 @@ public class PlayBackWindow extends JFrame {
         if (id!=null) {
             Session session = goDb.getSessionByID(id);
             List<Move> moves = goDb.getMovesForSession(id);
-            GoBoard playbackGoBoard = new GoBoard(session.getSize());
+            GoBoard playbackGoBoard = new GoBoard(session.getSessionSize());
             BoardPanel playbackBoardPanel = new BoardPanel(playbackGoBoard, stoneConsumer);
             newWindow.add(playbackBoardPanel, BorderLayout.CENTER);
             playbackBoardPanel.setVisible(true);

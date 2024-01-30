@@ -39,6 +39,10 @@ public class BoardPanel extends JPanel {
         this.goBoard = board;
     }
 
+    public GoBoard getGoBoard() {
+        return this.goBoard;
+    }
+
     // Metoda do odświeżania widoku planszy
     public void render() {
         repaint();

@@ -18,11 +18,13 @@ public class ServerSession {
     private final GoDb db;
     Set<Set<Intersection>> territories = new HashSet<>();
     Set<Intersection> visited = new HashSet<>();
+    int moveNum;
 
     public ServerSession(Player p1, Player p2, GoDb db) {
         this.p1 = p1;
         this.p2 = p2;
         this.db = db;
+        moveNum=0;
     }
 
     public void start() {
@@ -35,7 +37,7 @@ public class ServerSession {
         p2.sendGameStarted(1, board);
         board.setIntersections();
         System.out.println("Started new game session");
-        db.savePlayers(id, Arrays.asList(p1.getName(), p2.getName()));
+        db.savePlayers(id,board.getNumberOfSquares(), Arrays.asList(p1.getName(), p2.getName()));
         Player currentPlayer = p1;
         int invalideMoves;
         do {
@@ -60,11 +62,11 @@ public class ServerSession {
                         }
 
                     }
-                    if (isValide(intersection, currentPlayer, stone, board)) {
+                    if (isValid(intersection, currentPlayer, board)) {
                         validMove = true;
                         System.out.println("P1 move #" + currentPlayer.getMoveCount() + ": " + stone.toString());
                         board.addStone(stone);
-                        db.saveMove(id, currentPlayer.getName(), stone, currentPlayer.getMoveCount());
+                        db.saveMove(id, currentPlayer.getName(), stone, moveNum++);
                         sendBoard(board);
                     } else {
                         System.out.println("Invalid move . Try again.");
@@ -89,40 +91,49 @@ public class ServerSession {
         p2.sendGameOver();
     }
 
-    private boolean isValide(Intersection intersection, Player player,Stone MyStone, GoBoard board) {
-        if (!board.isInGoBoard(intersection.getX(), intersection.getY())) return false;
-        if (intersection.getStoneChain() != null) return false;
-        Set<Intersection> capturedStones = null;
-        Set<StoneChain> capturedStoneChains = null;
-        Set<StoneChain> adjStoneChains = intersection.getAdjacentStoneChains();
+    private boolean isValid(Intersection intersection, Player player,GoBoard board) {
+        if (!isValidPosition(intersection, board) || isOccupied(intersection)) {
+            return false;
+        }
+
+        Set<StoneChain> neighborsStoneChains = intersection.getNeighborsStoneChains();
         StoneChain newStoneChain = new StoneChain(intersection, player);
         intersection.setStoneChain(newStoneChain);
-        for (StoneChain stoneChain : adjStoneChains) {
+        for (StoneChain stoneChain : neighborsStoneChains) {
             if (stoneChain.getPlayer() == player) {
-                newStoneChain.add(stoneChain, intersection);
+                newStoneChain.addToStoneChain(stoneChain, intersection);
             } else {
-                stoneChain.removeLiberty(intersection);
-                if (stoneChain.getLiberties().size() == 0) {
-                    stoneChain.die();
-                    for (Intersection stonesInChain : stoneChain.getStones()) {
-                        board.removeStone(stonesInChain.getX(), stonesInChain.getY());
-                    }
-                }
+                removeLibertyAndCaptureIfNecessary(stoneChain, intersection, board);
             }
         }
         // Preventing suicide or ko and re-adding liberty
         if (newStoneChain.getLiberties().size() == 0) {
-            for (StoneChain chain : intersection.getAdjacentStoneChains()) {
-                chain.getLiberties().add(intersection);
-            }
+            intersection.getNeighborsStoneChains().forEach(chain -> chain.getLiberties().add(intersection));
             intersection.setStoneChain(null);
             return false;
         }
-        for (Intersection stone : newStoneChain.getStones()) {
-            stone.setStoneChain(newStoneChain);
-        }
+        newStoneChain.getStones().forEach(stone -> stone.setStoneChain(newStoneChain));
         return true;
     }
+    private boolean isValidPosition(Intersection intersection, GoBoard board) {
+        return board.isInGoBoard(intersection.getX(), intersection.getY());
+    }
+
+    private boolean isOccupied(Intersection intersection) {
+        return intersection.getStoneChain() != null;
+    }
+    private void removeLibertyAndCaptureIfNecessary(StoneChain stoneChain, Intersection intersection, GoBoard board) {
+        stoneChain.removeLiberty(intersection);
+        if (stoneChain.getLiberties().isEmpty()) {
+            captureChain(stoneChain, board);
+        }
+    }
+
+    private void captureChain(StoneChain stoneChain, GoBoard board) {
+        stoneChain.dieAndUpdateScore();
+        stoneChain.getStones().forEach(stone -> board.removeStone(stone.getX(), stone.getY()));
+    }
+
     private boolean isEndOfGame() {
         return p1.passed() && p2.passed();
     }
@@ -169,7 +180,7 @@ public class ServerSession {
         Set<Player> owners = new HashSet<>();
 
         for (Intersection intersection : territory) {
-            Set<StoneChain> adjStoneChains = intersection.getAdjacentStoneChains();
+            Set<StoneChain> adjStoneChains = intersection.getNeighborsStoneChains();
             for (StoneChain stoneChain : adjStoneChains) {
                 owners.add(stoneChain.getPlayer());
                 //if(owners.size()==2){break;}

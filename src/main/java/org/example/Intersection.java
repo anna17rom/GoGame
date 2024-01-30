@@ -49,37 +49,33 @@ public class Intersection {
     }
 
     // Metoda zwracająca zbiór sąsiednich łańcuchów kamieni
-    public Set<StoneChain> getAdjacentStoneChains() {
-        Set<StoneChain> adjacentStoneChains = new HashSet<>();
+    public Set<StoneChain> getNeighborsStoneChains() {
+        Set<StoneChain> neighborsStoneChains = new HashSet<>();
+        int[][] directions = {{-50, 0}, {0, -50}, {50, 0}, {0, 50}};
 
-        int[] dx = {-50, 0, 50, 0}, dy = {0, -50, 0, 50};
-
-        for (int i = 0; i < dx.length; i++) {
-            int newX = x + dx[i];
-            int newY = y + dy[i];
+        for (int[] direction: directions) {
+            int newX = x + direction[0];
+            int newY = y + direction[1];
 
             if (goBoard.isInGoBoard(newX, newY)) {
                 Intersection adjIntersection = goBoard.getIntersection(newX, newY);
                 if (adjIntersection.stoneChain != null) {
-                    adjacentStoneChains.add(adjIntersection.stoneChain);
+                    neighborsStoneChains.add(adjIntersection.stoneChain);
                 }
             }
         }
 
-        return adjacentStoneChains;
+        return neighborsStoneChains;
     }
 
     // Metoda zwracająca listę pustych sąsiadów skrzyżowania
-    public List<Intersection> getEmptyNeighbors() {
-        List<Intersection> emptyNeighbors = new ArrayList<>();
+    public Set<Intersection> getEmptyNeighbors() {
+        Set<Intersection> emptyNeighbors = new HashSet<>();
+        int[][] directions = {{-50, 0}, {0, -50}, {50, 0}, {0, 50}};
 
-        int[] dx = {-50, 0, 50, 0}, dy = {0, -50, 0, 50};
-        assert dx.length == dy.length : "dx and dy should have the same length";
-
-        for (int i = 0; i < dx.length; i++) {
-            int newX = x + dx[i];
-            int newY = y + dy[i];
-
+        for (int[] direction: directions) {
+            int newX = x + direction[0];
+            int newY = y + direction[1];
             if (goBoard.isInGoBoard(newX, newY)) {
                 Intersection adjIntersection = goBoard.getIntersection(newX, newY);
                 if (adjIntersection.isEmpty()) {
@@ -88,27 +84,6 @@ public class Intersection {
             }
         }
 
-        return emptyNeighbors;
-    }
-
-    // Metoda zwracająca listę pustych lub martwych sąsiadów skrzyżowania
-    public List<Intersection> getEmptyOrDeadNeighbors(Set<StoneChain> deadChains) {
-        List<Intersection> emptyNeighbors = new ArrayList<>();
-
-        int[] dx = {-50, 0, 50, 0}, dy = {0, -50, 0, 50};
-        assert dx.length == dy.length : "dx and dy should have the same length";
-
-        for (int i = 0; i < dx.length; i++) {
-            int newX = x + dx[i];
-            int newY = y + dy[i];
-
-            if (goBoard.isInGoBoard(newX, newY)) {
-                Intersection adjIntersection = goBoard.getIntersection(newX, newY);
-                if (adjIntersection.isEmpty() || deadChains.contains(adjIntersection.getStoneChain())) {
-                    emptyNeighbors.add(adjIntersection);
-                }
-            }
-        }
         return emptyNeighbors;
     }
 
