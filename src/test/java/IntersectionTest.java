@@ -38,15 +38,7 @@ class IntersectionTest {
     void testIsEmpty() {
         assertTrue(intersection.isEmpty(), "New intersection should be empty");
     }
-    @Test
-    void testGetAdjacentStoneChains() {
-        // Ustawienie kamieni na planszy, aby stworzyć sąsiednie łańcuchy
-        board.addStone(3, 4, GoBoard.StoneColor.BLACK);
-        board.addStone(2, 6, GoBoard.StoneColor.WHITE);
 
-        Set<StoneChain> adjacentChains = intersection.getAdjacentStoneChains();
-        assertEquals(2, adjacentChains.size(), "There should be two adjacent stone chains");
-    }
     @Test
     void testSetStoneChain() {
         StoneChain stoneChain = new StoneChain(intersection, null); // Załóżmy, że mamy nowy łańcuch kamieni

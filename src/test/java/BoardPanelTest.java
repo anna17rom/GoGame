@@ -9,6 +9,8 @@ import java.util.function.Consumer;
 import java.awt.event.MouseEvent;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 import static org.mockito.Mockito.*;
@@ -47,6 +49,42 @@ public class BoardPanelTest {
         assertEquals(GoBoard.StoneColor.BLACK, capturedStone.getColor(), "Stone color does not match");
     }
 
+    @Test
+    void testClearBoard() {
+        // Given a board with a stone
+        goBoard.addStone(new GoBoard.Stone(5, 5, GoBoard.StoneColor.BLACK));
+        assertFalse(goBoard.getStones().isEmpty(), "Board should have stones before clearing");
 
+        // When clearBoard is called
+        boardPanel.clearBoard();
+
+        // Then the board should have no stones
+        assertTrue(goBoard.getStones().isEmpty(), "Board should be empty after clearing");
+    }
+    @Test
+    void testAddStoneToBoard() {
+        // Given a new stone
+        GoBoard.Stone newStone = new GoBoard.Stone(3, 3, GoBoard.StoneColor.WHITE);
+
+        // When addStoneToBoard is called
+        boardPanel.addStoneToBoard(newStone);
+        assertEquals(1, goBoard.getStones().size(), "Board should have one stone");
+
+        GoBoard.Stone addedStone = goBoard.getStones().get(0);
+        assertEquals(newStone.getX(), addedStone.getX(), "X-coordinate of the stone should match");
+        assertEquals(newStone.getY(), addedStone.getY(), "Y-coordinate of the stone should match");
+        assertEquals(newStone.getColor(), addedStone.getColor(),"Color of the stone should match");
+    }
+    @Test
+    void testSetGoBoard() {
+        // Given a new GoBoard
+        GoBoard newGoBoard = new GoBoard();
+
+        // When setGoBoard is called
+        boardPanel.setGoBoard(newGoBoard);
+
+        // Then the GoBoard should be updated
+        assertSame(newGoBoard, boardPanel.getGoBoard(), "BoardPanel should use the new GoBoard");
+    }
 
 }

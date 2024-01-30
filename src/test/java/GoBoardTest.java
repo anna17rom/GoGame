@@ -12,7 +12,7 @@ public class GoBoardTest {
 
     @BeforeEach
     void setUp() {
-        goBoard = new GoBoard();
+        goBoard = new GoBoard(19);
     }
 
     @Test
@@ -31,6 +31,25 @@ public class GoBoardTest {
         assertEquals(5, stone.getX(), "X pozycja kamienia jest niepoprawna.");
         assertEquals(5, stone.getY(), "Y pozycja kamienia jest niepoprawna.");
         assertEquals(GoBoard.StoneColor.BLACK, stone.getColor(), "Kolor kamienia jest niepoprawny.");
+    }
+    @Test
+    void testRemoveStone() {
+        // Add a stone to the board
+        int x = 5;
+        int y = 5;
+        GoBoard.StoneColor color = GoBoard.StoneColor.BLACK;
+        goBoard.addStone(x, y, color);
+
+        // Ensure the stone is added
+        assertTrue(goBoard.getStones().stream().anyMatch(stone -> stone.getX() == x && stone.getY() == y && stone.getColor() == color),
+                "Stone should be on the board before removal.");
+
+        // Now remove the stone
+        goBoard.removeStone(x, y);
+
+        // Verify the stone is removed
+        assertFalse(goBoard.getStones().stream().anyMatch(stone -> stone.getX() == x && stone.getY() == y),
+                "Stone should be removed from the board.");
     }
 
 }
