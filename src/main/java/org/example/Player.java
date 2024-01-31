@@ -11,7 +11,7 @@ public abstract class Player {
     Boolean IfPassed=false; // Flaga informująca o tym, czy gracz przeszedł (czy zatwierdził "pass")
     protected int capturedStones; // Liczba zdobytych kamieni przez gracza
     protected Set<Set<Intersection>> territories=new HashSet<>(); // Zbiór terytoriów gracza
-    int size;  // Rozmiar planszy
+    public int size;  // Rozmiar planszy
     private String name;  // Nazwa gracza
     protected int moveCount = 0;  // Licznik wykonanych ruchów
 

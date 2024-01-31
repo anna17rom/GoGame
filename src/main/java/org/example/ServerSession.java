@@ -91,7 +91,7 @@ public class ServerSession {
         p2.sendGameOver();
     }
 
-    private boolean isValid(Intersection intersection, Player player,GoBoard board) {
+    public boolean isValid(Intersection intersection, Player player,GoBoard board) {
         if (!isValidPosition(intersection, board) || isOccupied(intersection)) {
             return false;
         }
